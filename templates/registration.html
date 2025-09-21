@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration with Face Detection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .camera-modal .modal-dialog {
+            max-width: 600px;
+        }
+        
+        #video {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            border: 3px solid #667eea;
+        }
+        
+        .face-detection-status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .capture-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            border-radius: 50px;
+            width: 80px;
+            height: 80px;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .capture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .captured-image {
+            max-width: 200px;
+            border-radius: 10px;
+            border: 3px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold text-primary">
+                                <i class="fas fa-user-plus me-2"></i>User Registration
+                            </h2>
+                            <p class="text-muted">Register with face verification</p>
+                            <a href="/login" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-sign-in-alt me-1"></i>Already registered? Login
+                            </a>
+                        </div>
+                        
+                        <form id="registrationForm">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Full Name
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>Password
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="fas fa-lock me-2"></i>Confirm Password
+                                </label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                            
+                            <div id="capturedImageContainer" class="text-center mb-3" style="display: none;">
+                                <p class="text-success"><i class="fas fa-check-circle me-2"></i>Face Captured Successfully!</p>
+                                <img id="capturedImage" class="captured-image" src="" alt="Captured face">
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary w-100 mb-3" id="captureBtn">
+                                <i class="fas fa-camera me-2"></i>Capture Face
+                            </button>
+                            
+                            <button type="submit" class="btn btn-success w-100" id="registerBtn" disabled>
+                                <i class="fas fa-user-check me-2"></i>Register
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div class="modal fade camera-modal" id="cameraModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-camera me-2"></i>Face Capture
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <video id="video" autoplay muted></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                    </div>
+                    
+                    <div id="faceStatus" class="face-detection-status" style="display: none;"></div>
+                    
+                    <button type="button" class="btn capture-btn" id="takePictureBtn">
+                        <i class="fas fa-camera fa-2x text-white"></i>
+                    </button>
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Position yourself in the camera and click to capture
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let stream = null;
+        let capturedImageData = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+
+        // Form validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (password !== confirmPassword) {
+                this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Capture button click
+        document.getElementById('captureBtn').addEventListener('click', function() {
+            cameraModal.show();
+        });
+
+        // Modal shown event
+        document.getElementById('cameraModal').addEventListener('shown.bs.modal', async function() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: 640, 
+                        height: 480,
+                        facingMode: 'user'
+                    } 
+                });
+                video.srcObject = stream;
+                
+                // Set canvas size
+                canvas.width = 640;
+                canvas.height = 480;
+                
+                showStatus('Camera ready! Position yourself and click capture.', 'success');
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showStatus('Camera access denied or not available', 'error');
+            }
+        });
+
+        // Modal hidden event
+        document.getElementById('cameraModal').addEventListener('hidden.bs.modal', function() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            hideStatus();
+        });
+
+        // Take picture button - simplified without face detection
+        document.getElementById('takePictureBtn').addEventListener('click', async function() {
+            if (!stream) {
+                showStatus('Camera not available', 'error');
+                return;
+            }
+            
+            // Draw video frame to canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            // Get image data
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Show success message
+            showStatus('Photo captured successfully!', 'success');
+            
+            // Store captured image
+            capturedImageData = imageData;
+            
+            // Show captured image
+            document.getElementById('capturedImage').src = imageData;
+            document.getElementById('capturedImageContainer').style.display = 'block';
+            
+            // Enable register button
+            document.getElementById('registerBtn').disabled = false;
+            
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                cameraModal.hide();
+            }, 2000);
+        });
+
+        // Registration form submit
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!capturedImageData) {
+                alert('Please capture your photo first!');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('password', document.getElementById('password').value);
+            formData.append('image', capturedImageData);
+            
+            // Show loading
+            const submitBtn = document.getElementById('registerBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registering...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Registration successful!');
+                    // Reset form
+                    this.reset();
+                    document.getElementById('capturedImageContainer').style.display = 'none';
+                    document.getElementById('registerBtn').disabled = true;
+                    capturedImageData = null;
+                } else {
+                    alert('Registration failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Registration failed. Please try again.');
+            } finally {
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = !capturedImageData;
+            }
+        });
+
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('faceStatus');
+            statusElement.textContent = message;
+            statusElement.className = `face-detection-status status-${type}`;
+            statusElement.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('faceStatus').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

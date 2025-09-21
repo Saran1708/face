@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .welcome-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            overflow: hidden;
+        }
+        
+        .welcome-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .welcome-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        
+        .welcome-body {
+            padding: 3rem 2rem;
+        }
+        
+        .feature-card {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-logout {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+        }
+        
+        .user-info {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(40, 167, 69, 0.2);
+        }
+        
+        .success-badge {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="welcome-card animate-fade-in">
+                    <div class="welcome-header">
+                        <i class="fas fa-shield-check welcome-icon pulse-animation"></i>
+                        <h1 class="display-4 fw-bold mb-3">Welcome!</h1>
+                        <p class="lead mb-0">You have been successfully authenticated</p>
+                        <div class="success-badge mt-3">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Face Authentication Successful
+                        </div>
+                    </div>
+                    
+                    <div class="welcome-body">
+                        <div class="user-info" id="userInfo" style="display: none;">
+                            <h5 class="text-success mb-2">
+                                <i class="fas fa-user-check me-2"></i>User Information
+                            </h5>
+                            <p class="mb-1"><strong>Name:</strong> <span id="userName"></span></p>
+                            <p class="mb-0"><strong>Email:</strong> <span id="userEmail"></span></p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="feature-card text-center">
+                                    <i class="fas fa-lock feature-icon"></i>
+                                    <h4 class="text-primary">Secure Access</h4>
+                                    <p class="text-muted">Your identity has been verified using advanced face recognition technology.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card text-center">
+                                    <i class="fas fa-rocket feature-icon"></i>
+                                    <h4 class="text-primary">Quick Login</h4>
+                                    <p class="text-muted">No need to remember passwords. Just look at the camera and you're in!</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="feature-card text-center">
+                                    <i class="fas fa-eye feature-icon"></i>
+                                    <h4 class="text-primary">Privacy Protected</h4>
+                                    <p class="text-muted">Your biometric data is securely processed and never stored permanently.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-card text-center">
+                                    <i class="fas fa-cog feature-icon"></i>
+                                    <h4 class="text-primary">Smart System</h4>
+                                    <p class="text-muted">AI-powered face recognition ensures accurate and reliable authentication.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <div class="alert alert-success d-inline-block">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Authentication Status:</strong> Verified and Secure
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="/" class="btn btn-logout me-3">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                            <a href="/login" class="btn btn-outline-primary">
+                                <i class="fas fa-redo me-2"></i>Login Again
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Display user information if available
+        window.addEventListener('load', function() {
+            const userInfo = sessionStorage.getItem('user');
+            if (userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    document.getElementById('userName').textContent = user.name || 'N/A';
+                    document.getElementById('userEmail').textContent = user.email || 'N/A';
+                    document.getElementById('userInfo').style.display = 'block';
+                } catch (error) {
+                    console.error('Error parsing user info:', error);
+                }
+            }
+        });
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

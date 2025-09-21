@@ -1,0 +1,8 @@
+# .gitkeep files to preserve empty directories in git
+
+# Create these files:
+# uploads/.gitkeep
+# temp/.gitkeep
+
+# Content of .gitkeep (this file keeps directories in git):
+# This file ensures the directory is tracked by git even when empty
